@@ -74,6 +74,18 @@ def get_schema_snapshot():
         
     return snapshot
 
+def understand_anvil():
+    """
+    Ingests the Anvil Coding Manual to ensure compliance with Sovereign Law.
+    """
+    manual_path = os.path.join(PROJECT_ROOT, "DOCS", "anvil_coding_manual.md")
+    if os.path.exists(manual_path):
+        print(f"\033[1;36m[KNOWLEDGE] Ingesting Anvil Protocols from: {manual_path}\033[0m")
+        print("   -> Protocol: .mpy = MicroJSON Source (Human Readable)")
+        print("   -> Protocol: .anv = AI Machine Byte Code (Binary)")
+    else:
+        print(f"\033[1;31m[WARNING] Anvil Manual not found at {manual_path}\033[0m")
+
 # --- SHELL HISTORY ---
 try:
     if not os.path.exists(os.path.dirname(HISTORY_FILE)):
@@ -150,10 +162,15 @@ def main():
     print(f"AIMEAT: Autonomous System Operator - ONLINE (PID: {os.getpid()})")
     print(f"Database: {CORTEX_DB_PATH}")
     
+    # 1. Understand Anvil (Read-Only Startup)
+    understand_anvil()
+    
     if not HAS_GENAI:
         print("Notice: 'google-genai' not found. AI capabilities disabled.")
     
-    print("Waiting for instructions... (Ctrl+C to exit, 'exit' to quit)")
+    # 2. Wait for Instructions
+    print("System READY (Read-Only Mode Active).")
+    print("Waiting for instruction from $meat, $lady_boss ... (Ctrl+C to exit)")
     
     while True:
         try:
